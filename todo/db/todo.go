@@ -94,6 +94,11 @@ func (t *ToDo) AddItem(item ToDoItem) error {
 	//at the end to indicate that the item was properly added to the
 	//database.
 
+	err := t.loadDB()
+	if err != nil {
+		return err
+	}
+
 	return errors.New("AddItem() is currently not implemented")
 }
 
