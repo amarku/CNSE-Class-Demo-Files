@@ -99,7 +99,18 @@ func (t *ToDo) AddItem(item ToDoItem) error {
 		return err
 	}
 
-	return errors.New("AddItem() is currently not implemented")
+	_, exists := t.toDoMap[item.Id]
+	if exists {
+		return fmt.Errorf("item number %d already exists", item.Id)
+	}
+
+	t.toDoMap[item.Id] = item
+	err = t.saveDB()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // DeleteItem accepts an item id and removes it from the DB.
