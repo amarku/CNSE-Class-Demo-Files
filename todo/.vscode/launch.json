@@ -17,9 +17,10 @@
             "request": "launch",
             "mode": "auto",
             "args": [
-                "-l"
+                "-a",
+                "{\"id\": 5, \"title\": \"Go to Florida\", \"done\": false}"
             ],
-            "program": "${fileDirname}/main.go"
+            "program": "${fileDirname}/main.go",
         }
     ]
 }
