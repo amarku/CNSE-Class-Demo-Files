@@ -27,7 +27,10 @@ type DbMap map[int]ToDoItem
 //	   	 (they are lowercase).  Describe why you think this is
 //		 a good design decision.
 //
-// ANSWER: <GOES HERE>
+// ANSWER: This helps distinguish the json inputs and outputs from the object
+//
+//	fields for the programmer when building out the functionality. This
+//	should help prevent bugs from being added when writing the code.
 type ToDo struct {
 	toDoMap    DbMap
 	dbFileName string
@@ -139,7 +142,23 @@ func (t *ToDo) DeleteItem(id int) error {
 	//return nil at the end to indicate that the item was properly deleted
 	//from the database.
 
-	return errors.New("DeleteItem() is currently not implemented")
+	err := t.loadDB()
+	if err != nil {
+		return err
+	}
+
+	if item, ok := t.toDoMap[id]; ok {
+		fmt.Printf("Deleting the following to do list item:\nID: %d \nTitle: %s\n", id, item.Title)
+		delete(t.toDoMap, id)
+		err = t.saveDB()
+		if err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("item not found with ID %d", id)
+	}
+
+	return nil
 }
 
 // UpdateItem accepts a ToDoItem and updates it in the DB.
@@ -168,7 +187,22 @@ func (t *ToDo) UpdateItem(item ToDoItem) error {
 	//no errors, this function should return nil at the end to indicate
 	//that the item was properly updated in the database.
 
-	return errors.New("UpdateItem() is currently not implemented")
+	err := t.loadDB()
+	if err != nil {
+		return err
+	}
+
+	if _, ok := t.toDoMap[item.Id]; ok {
+		t.toDoMap[item.Id] = item
+		err = t.saveDB()
+		if err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no existing item found with ID %d", item.Id)
+	}
+
+	return nil
 }
 
 // GetItem accepts an item id and returns the item from the DB.
@@ -198,7 +232,16 @@ func (t *ToDo) GetItem(id int) (ToDoItem, error) {
 	//as the error value the end to indicate that the item was
 	//properly returned from the database.
 
-	return ToDoItem{}, errors.New("GetItem() is currently not implemented")
+	err := t.loadDB()
+	if err != nil {
+		return ToDoItem{}, err
+	}
+
+	if item, ok := t.toDoMap[id]; ok {
+		return item, nil
+	}
+
+	return ToDoItem{}, fmt.Errorf("no to do list item found with id %d", id)
 }
 
 // GetAllItems returns all items from the DB.  If successful it
@@ -223,7 +266,18 @@ func (t *ToDo) GetAllItems() ([]ToDoItem, error) {
 	//Finally, if there were no errors along the way, return the slice
 	//and nil as the error value.
 
-	return nil, errors.New("GetAllItems() is currently not implemented")
+	err := t.loadDB()
+	if err != nil {
+		return nil, err
+	}
+
+	var toDoList []ToDoItem
+
+	for _, item := range t.toDoMap {
+		toDoList = append(toDoList, item)
+	}
+
+	return toDoList, nil
 }
 
 // PrintItem accepts a ToDoItem and prints it to the console
