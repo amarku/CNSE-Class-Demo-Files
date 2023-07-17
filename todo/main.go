@@ -55,7 +55,19 @@ const (
 //						   use it.  See github.com/spf13/cobra for information
 //						   on how to use it.
 //
-//	 YOUR ANSWER: <GOES HERE>
+//	 YOUR ANSWER: The flag.Var() functions for each data type take in a reference to a variable
+//				  to bind the command line flag to that variable. The second argument is the command
+//				  line flag that will be used to bind to that variable. The third argument is the default
+//				  value of the variable that should be used if the command line flag is not present.
+//				  The fourth argument is a string with instructions for the user for the flag, which
+//				  can be used to print help to the user if needed.
+//				  flag.Parse() is called to actually parse the command line arguments. flag.Usage() can then
+//				  be called to print the usage instructions to the user as previously
+//				  set in the flag.Var() functions.
+//				  flag.Visit() goes through each flag if it is set and runs the function that is given
+//				  in the argument. In this case it is used to set the appOpt variable.
+//				  The appOpt variable is returned with the enumerated value of which flag was set
+//				  on the command line.
 func processCmdLineFlags() (AppOptType, error) {
 	flag.StringVar(&dbFileNameFlag, "db", "./data/todo.json", "Name of the database file")
 
