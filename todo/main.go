@@ -81,6 +81,7 @@ func processCmdLineFlags() (AppOptType, error) {
 	flag.Parse()
 
 	var appOpt AppOptType = INVALID_APP_OPT
+	var err error = nil
 
 	//show help if no flags are set
 	if len(os.Args) == 1 {
@@ -117,7 +118,11 @@ func processCmdLineFlags() (AppOptType, error) {
 		case "s":
 			//For extra credit you will need to change some things here
 			//and also in main under the CHANGE_ITEM_STATUS case
-			appOpt = CHANGE_ITEM_STATUS
+			if appOpt != QUERY_DB_ITEM {
+				err = errors.New("must include -q flag and item ID number to update done status")
+			} else {
+				appOpt = CHANGE_ITEM_STATUS
+			}
 		default:
 			appOpt = INVALID_APP_OPT
 		}
@@ -129,7 +134,7 @@ func processCmdLineFlags() (AppOptType, error) {
 		return appOpt, errors.New("no flags or unimplemented were set")
 	}
 
-	return appOpt, nil
+	return appOpt, err
 }
 
 // main is the entry point for our todo CLI application.  It processes
@@ -214,7 +219,11 @@ func main() {
 		//For the CHANGE_ITEM_STATUS extra credit you will also
 		//need to add some code here
 		fmt.Println("Running CHANGE_ITEM_STATUS...")
-		fmt.Println("Not implemented yet, but it can be for extra credit")
+		err := todo.ChangeItemDoneStatus(queryFlag, itemStatusFlag)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			break
+		}
 		fmt.Println("Ok")
 	default:
 		fmt.Println("INVALID_APP_OPT")
