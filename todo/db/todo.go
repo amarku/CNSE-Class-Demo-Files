@@ -2,7 +2,6 @@ package db
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 )
@@ -340,7 +339,19 @@ func (t *ToDo) ChangeItemDoneStatus(id int, value bool) error {
 	//errors along the way, return them.  If everything is successful
 	//return nil at the end to indicate that the item was properly
 
-	return errors.New("ChangeItemDoneStatus() is currently not implemented")
+	item, err := t.GetItem(id)
+	if err != nil {
+		return err
+	}
+
+	item.IsDone = value
+
+	err = t.UpdateItem(item)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 //------------------------------------------------------------
