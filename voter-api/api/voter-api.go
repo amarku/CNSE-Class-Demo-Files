@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"voter-api-starter/voter"
+	"voter-api/voter"
 )
 
 type VoterApi struct {

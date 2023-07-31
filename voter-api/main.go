@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"voter-api-starter/api"
+	"voter-api/api"
 )
 
 func main() {
