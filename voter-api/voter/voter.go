@@ -21,6 +21,12 @@ type VoterList struct {
 }
 
 // constructor for VoterList struct
+func NewVoterList() VoterList {
+	return VoterList{
+		make(map[uint]Voter),
+	}
+}
+
 func NewVoter(id uint, fn, ln string) *Voter {
 	return &Voter{
 		FirstName:   fn,

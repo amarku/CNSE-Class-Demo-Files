@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"voter-api/api"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -14,19 +17,26 @@ func main() {
 
 	//b, _ := json.Marshal(v)
 	//fmt.Println(string(b))
-	vl := api.NewVoterApi()
-	vl.AddVoter(1, "John", "Doe")
-	vl.AddPoll(1, 1)
-	vl.AddPoll(1, 2)
-	vl.AddVoter(2, "Jane", "Doe")
-	vl.AddPoll(2, 1)
-	vl.AddPoll(2, 2)
+	// vl := api.NewVoterApi()
+	// vl.AddVoter(1, "John", "Doe")
+	// vl.AddPoll(1, 1)
+	// vl.AddPoll(1, 2)
+	// vl.AddVoter(2, "Jane", "Doe")
+	// vl.AddPoll(2, 1)
+	// vl.AddPoll(2, 2)
 
+	// fmt.Println("------------------------")
+	// fmt.Println(vl.GetVoterJson(1))
+	// fmt.Println("------------------------")
+	// fmt.Println(vl.GetVoterJson(2))
+	// fmt.Println("------------------------")
+	// fmt.Println(vl.GetVoterListJson())
 	fmt.Println("------------------------")
-	fmt.Println(vl.GetVoterJson(1))
-	fmt.Println("------------------------")
-	fmt.Println(vl.GetVoterJson(2))
-	fmt.Println("------------------------")
-	fmt.Println(vl.GetVoterListJson())
-	fmt.Println("------------------------")
+
+	r := gin.Default()
+	r.Use(cors.Default())
+
+	voterAPI := api.NewVoterApi()
+
+	r.GET("/voters", voterAPI.GetVoterList)
 }

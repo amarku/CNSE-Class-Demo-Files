@@ -11,9 +11,7 @@ type VoterApi struct {
 
 func NewVoterApi() *VoterApi {
 	return &VoterApi{
-		voterList: voter.VoterList{
-			Voters: make(map[uint]voter.Voter),
-		},
+		voter.NewVoterList(),
 	}
 }
 
