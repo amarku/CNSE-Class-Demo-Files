@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"voter-api/voter"
+
+	"github.com/gin-gonic/gin"
 )
 
 type VoterApi struct {
@@ -42,4 +44,8 @@ func (v *VoterApi) GetVoterList() voter.VoterList {
 func (v *VoterApi) GetVoterListJson() string {
 	b, _ := json.Marshal(v.voterList)
 	return string(b)
+}
+
+func (v *VoterApi) ListAllVoters(c *gin.Context) {
+	voterList := v.voterList.Voters
 }
