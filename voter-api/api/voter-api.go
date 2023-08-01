@@ -2,6 +2,9 @@ package api
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
+	"strconv"
 	"voter-api/voter"
 
 	"github.com/gin-gonic/gin"
@@ -47,5 +50,27 @@ func (v *VoterApi) GetVoterListJson() string {
 }
 
 func (v *VoterApi) ListAllVoters(c *gin.Context) {
-	voterList := v.voterList.Voters
+	c.JSON(http.StatusOK, v.voterList)
+}
+
+func (v *VoterApi) ListVoter(c *gin.Context) {
+	id := getIDFromContext(c, "id")
+	voter := v.GetVoter(id)
+
+	c.JSON(http.StatusOK, voter)
+}
+
+func (v *VoterApi) ListPollHistory(c *gin.Context) {
+	id := getIDFromContext(c, "id")
+	voter := v.GetVoter(id)
+}
+
+func getIDFromContext(c *gin.Context, param string) uint {
+	idString := c.Param(param)
+	id, err := strconv.ParseInt(idString, 10, 32)
+	if err != nil {
+		log.Println("Error converting id to integer: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+	return uint(id)
 }

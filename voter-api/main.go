@@ -36,7 +36,9 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	voterAPI := api.NewVoterApi()
+	voterApi := api.NewVoterApi()
 
-	r.GET("/voters", voterAPI.GetVoterList)
+	r.GET("/voters", voterApi.ListAllVoters)
+	r.GET("/voters/:id", voterApi.ListVoter)
+	r.GET("/voters/:id/polls", voterApi.ListPollHistory)
 }
