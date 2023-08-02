@@ -11,10 +11,10 @@ type voterPoll struct {
 }
 
 type Voter struct {
-	VoterID     uint
-	FirstName   string
-	LastName    string
-	VoteHistory []voterPoll
+	VoterID     uint        `json:"voterID"`
+	FirstName   string      `json:"firstName"`
+	LastName    string      `json:"lastName"`
+	VoteHistory []voterPoll `json:"voteHistory"`
 }
 type VoterList struct {
 	Voters map[uint]Voter //A map of VoterIDs as keys and Voter structs as values
@@ -42,4 +42,17 @@ func (v *Voter) AddPoll(pollID uint) {
 func (v *Voter) ToJson() string {
 	b, _ := json.Marshal(v)
 	return string(b)
+}
+
+func (v *Voter) GetVoteHistory() []time.Time {
+	var pollDates []time.Time
+	for _, history := range v.VoteHistory {
+		pollDates = append(pollDates, history.VoteDate)
+	}
+
+	return pollDates
+}
+
+func (v *Voter) GetPollById(pollId uint) time.Time {
+	return v.VoteHistory[pollId].VoteDate
 }

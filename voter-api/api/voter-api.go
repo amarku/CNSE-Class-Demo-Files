@@ -20,8 +20,17 @@ func NewVoterApi() *VoterApi {
 	}
 }
 
-func (v *VoterApi) AddVoter(voterID uint, firstName, lastName string) {
-	v.voterList.Voters[voterID] = *voter.NewVoter(voterID, firstName, lastName)
+func (v *VoterApi) AddVoter(c *gin.Context) {
+	//v.voterList.Voters[voterID] = *voter.NewVoter(voterID, firstName, lastName)
+	var newVoter voter.Voter
+
+	if err := c.ShouldBindJSON(&newVoter); err != nil {
+		log.Println("Error binding JSON: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	v.voterList.Voters[getIDFromContext(c, "id")] = newVoter
 }
 
 func (v *VoterApi) AddPoll(voterID, pollID uint) {
@@ -63,6 +72,31 @@ func (v *VoterApi) ListVoter(c *gin.Context) {
 func (v *VoterApi) ListPollHistory(c *gin.Context) {
 	id := getIDFromContext(c, "id")
 	voter := v.GetVoter(id)
+	voteHistory := voter.GetVoteHistory()
+
+	c.JSON(http.StatusOK, voteHistory)
+}
+
+func (v *VoterApi) ListSinglePollData(c *gin.Context) {
+	id := getIDFromContext(c, "id")
+	pollId := getIDFromContext(c, "pollid")
+
+	voter := v.GetVoter(id)
+	pollData := voter.GetPollById(pollId)
+
+	c.JSON(http.StatusOK, pollData)
+}
+
+func (v *VoterApi) AddPollData(c *gin.Context) {
+	id := getIDFromContext(c, "id")
+	pollId := getIDFromContext(c, "pollid")
+
+	voter := v.GetVoter(id)
+	voter.AddPoll(pollId)
+}
+
+func (v *VoterApi) GetHealth(c *gin.Context) {
+	c.JSON(http.StatusOK, "API is running")
 }
 
 func getIDFromContext(c *gin.Context, param string) uint {
