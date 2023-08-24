@@ -10,7 +10,7 @@ import (
 )
 
 type VoterApi struct {
-	voterList voter.VoterList
+	voterList *voter.VoterList
 }
 
 func NewVoterApi() *VoterApi {
@@ -28,27 +28,38 @@ func (v *VoterApi) AddVoter(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-
-	v.voterList.Voters[getIDFromContext(c, "id")] = newVoter
+	c.JSON(http.StatusOK, newVoter)
 }
 
-func (v *VoterApi) AddPoll(voterID, pollID uint) {
-	voter := v.voterList.Voters[voterID]
+func (v *VoterApi) AddPoll(c *gin.Context, voterID, pollID uint) {
+	voter, err := v.voterList.GetVoter(voterID)
+	if err != nil {
+		log.Println("error getting voter ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 	voter.AddPoll(pollID)
-	v.voterList.Voters[voterID] = voter
 }
 
-func (v *VoterApi) GetVoter(voterID uint) voter.Voter {
-	voter := v.voterList.Voters[voterID]
+func (v *VoterApi) GetVoter(c *gin.Context, voterID uint) *voter.Voter {
+	voter, err := v.voterList.GetVoter(voterID)
+	if err != nil {
+		log.Println("error getting voter: " + err.Error())
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
 	return voter
 }
 
-func (v *VoterApi) GetVoterJson(voterID uint) string {
-	voter := v.voterList.Voters[voterID]
+func (v *VoterApi) GetVoterJson(c *gin.Context, voterID uint) string {
+	voter, err := v.voterList.GetVoter(voterID)
+	if err != nil {
+		log.Println("error getting voter: " + err.Error())
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
 	return voter.ToJson()
 }
 
-func (v *VoterApi) GetVoterList() voter.VoterList {
+func (v *VoterApi) GetVoterList() *voter.VoterList {
 	return v.voterList
 }
 
@@ -63,14 +74,14 @@ func (v *VoterApi) ListAllVoters(c *gin.Context) {
 
 func (v *VoterApi) ListVoter(c *gin.Context) {
 	id := getIDFromContext(c, "id")
-	voter := v.GetVoter(id)
+	voter := v.GetVoter(c, id)
 
 	c.JSON(http.StatusOK, voter)
 }
 
 func (v *VoterApi) ListPollHistory(c *gin.Context) {
 	id := getIDFromContext(c, "id")
-	voter := v.GetVoter(id)
+	voter := v.GetVoter(c, id)
 	voteHistory := voter.GetVoteHistory()
 
 	c.JSON(http.StatusOK, voteHistory)
@@ -80,7 +91,7 @@ func (v *VoterApi) ListSinglePollData(c *gin.Context) {
 	id := getIDFromContext(c, "id")
 	pollId := getIDFromContext(c, "pollid")
 
-	voter := v.GetVoter(id)
+	voter := v.GetVoter(c, id)
 	pollData := voter.GetPollById(pollId)
 
 	c.JSON(http.StatusOK, pollData)
@@ -90,7 +101,7 @@ func (v *VoterApi) AddPollData(c *gin.Context) {
 	id := getIDFromContext(c, "id")
 	pollId := getIDFromContext(c, "pollid")
 
-	voter := v.GetVoter(id)
+	voter := v.GetVoter(c, id)
 	voter.AddPoll(pollId)
 }
 
