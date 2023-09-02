@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Voter-Container/api"
+	"Votes-HATEOS/api"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"Voter-Container/voter"
+	"Votes-HATEOS/voter"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
