@@ -41,7 +41,7 @@ type VoterList struct {
 	cache
 }
 
-// constructor for VoterList struct
+// NewVoterList constructor for VoterList struct
 func NewVoterList() *VoterList {
 	redisUrl := os.Getenv("REDIS_URL")
 	if redisUrl == "" {
