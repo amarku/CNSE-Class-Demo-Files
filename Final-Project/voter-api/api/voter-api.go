@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -21,7 +20,6 @@ func NewVoterApi() *VoterApi {
 }
 
 func (v *VoterApi) AddVoter(c *gin.Context) {
-	//v.voterList.Voters[voterID] = *voter-api.NewVoter(voterID, firstName, lastName)
 	var newVoter schema.Voter
 
 	if err := c.ShouldBindJSON(&newVoter); err != nil {
@@ -30,7 +28,7 @@ func (v *VoterApi) AddVoter(c *gin.Context) {
 		return
 	}
 
-	if err := v.voterList.AddVoter(newVoter.VoterID, newVoter); err != nil {
+	if err := v.voterList.AddVoter(newVoter); err != nil {
 		log.Println("Error adding voter-api: ", err)
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
@@ -67,17 +65,18 @@ func (v *VoterApi) GetVoterJson(c *gin.Context, voterID uint) string {
 	return voter.ToJson()
 }
 
-func (v *VoterApi) GetVoterList() *schema.VoterList {
-	return v.voterList
-}
-
-func (v *VoterApi) GetVoterListJson() string {
-	b, _ := json.Marshal(v.voterList)
-	return string(b)
-}
-
 func (v *VoterApi) ListAllVoters(c *gin.Context) {
-	c.JSON(http.StatusOK, v.voterList)
+	voterList, err := v.voterList.GetAllVoters()
+	if err != nil {
+		log.Println("Error getting all voter: ", err)
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	if voterList == nil {
+		voterList = make([]schema.Voter, 0)
+	}
+	c.JSON(http.StatusOK, voterList)
 }
 
 func (v *VoterApi) ListVoter(c *gin.Context) {

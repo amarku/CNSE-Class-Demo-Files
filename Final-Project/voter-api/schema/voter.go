@@ -109,7 +109,7 @@ func (v *Voter) ToJson() string {
 	return string(b)
 }
 
-func (vl *VoterList) AddVoter(voterID uint, newVoter Voter) error {
+func (vl *VoterList) AddVoter(newVoter Voter) error {
 	redisKey := redisKeyFromId(newVoter.VoterID)
 	var existingVoter Voter
 	if err := vl.getVoterFromRedis(redisKey, &existingVoter); err == nil {
@@ -129,6 +129,26 @@ func (vl *VoterList) GetVoter(id uint) (*Voter, error) {
 		return &Voter{}, err
 	}
 	return &voter, nil
+}
+
+func (vl *VoterList) GetAllVoters() ([]Voter, error) {
+	var voterList []Voter
+	var voter Voter
+
+	pattern := RedisKeyPrefix + "*"
+	ks, err := vl.cacheClient.Keys(vl.context, pattern).Result()
+	if err != nil {
+		return nil, err
+	}
+	for _, key := range ks {
+		err = vl.getVoterFromRedis(key, &voter)
+		if err != nil {
+			return nil, err
+		}
+		voterList = append(voterList, voter)
+	}
+
+	return voterList, nil
 }
 
 func (v *Voter) GetVoteHistory() []time.Time {
