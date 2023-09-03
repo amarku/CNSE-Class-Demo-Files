@@ -1,4 +1,4 @@
-package poll
+package poll_api
 
 import (
 	"encoding/json"

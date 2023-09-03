@@ -2,7 +2,7 @@ FROM golang:1.20 AS build-stage
 
 WORKDIR /app
 
-COPY . .
+COPY .. .
 
 RUN go mod download
 

@@ -1,27 +1,28 @@
 package api
 
 import (
-	"Votes-HATEOS/voter"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
+
+	"voter-api/schema"
 )
 
 type VoterApi struct {
-	voterList *voter.VoterList
+	voterList *schema.VoterList
 }
 
 func NewVoterApi() *VoterApi {
 	return &VoterApi{
-		voter.NewVoterList(),
+		schema.NewVoterList(),
 	}
 }
 
 func (v *VoterApi) AddVoter(c *gin.Context) {
-	//v.voterList.Voters[voterID] = *voter.NewVoter(voterID, firstName, lastName)
-	var newVoter voter.Voter
+	//v.voterList.Voters[voterID] = *voter-api.NewVoter(voterID, firstName, lastName)
+	var newVoter schema.Voter
 
 	if err := c.ShouldBindJSON(&newVoter); err != nil {
 		log.Println("Error binding JSON: ", err)
@@ -30,7 +31,7 @@ func (v *VoterApi) AddVoter(c *gin.Context) {
 	}
 
 	if err := v.voterList.AddVoter(newVoter.VoterID, newVoter); err != nil {
-		log.Println("Error adding voter: ", err)
+		log.Println("Error adding voter-api: ", err)
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
 
@@ -40,18 +41,19 @@ func (v *VoterApi) AddVoter(c *gin.Context) {
 func (v *VoterApi) AddPoll(c *gin.Context, voterID, pollID uint) {
 	voter, err := v.voterList.GetVoter(voterID)
 	if err != nil {
-		log.Println("error getting voter ", err)
+		log.Println("error getting voter-api ", err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	voter.AddPoll(pollID)
 }
 
-func (v *VoterApi) GetVoter(c *gin.Context, voterID uint) *voter.Voter {
+func (v *VoterApi) GetVoter(c *gin.Context, voterID uint) *schema.Voter {
 	voter, err := v.voterList.GetVoter(voterID)
 	if err != nil {
-		log.Println("error getting voter: " + err.Error())
+		log.Println("error getting voter-api: " + err.Error())
 		c.AbortWithStatus(http.StatusBadRequest)
+		return nil
 	}
 	return voter
 }
@@ -59,13 +61,13 @@ func (v *VoterApi) GetVoter(c *gin.Context, voterID uint) *voter.Voter {
 func (v *VoterApi) GetVoterJson(c *gin.Context, voterID uint) string {
 	voter, err := v.voterList.GetVoter(voterID)
 	if err != nil {
-		log.Println("error getting voter: " + err.Error())
+		log.Println("error getting voter-api: " + err.Error())
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
 	return voter.ToJson()
 }
 
-func (v *VoterApi) GetVoterList() *voter.VoterList {
+func (v *VoterApi) GetVoterList() *schema.VoterList {
 	return v.voterList
 }
 
