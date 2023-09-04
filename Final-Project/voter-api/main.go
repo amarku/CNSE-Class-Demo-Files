@@ -15,7 +15,7 @@ func main() {
 
 	r.GET("/voters", voterApi.ListAllVoters)
 	r.GET("/voters/:id", voterApi.ListVoter)
-	r.POST("/voters/:id", voterApi.AddVoter)
+	r.POST("/voters", voterApi.AddVoter)
 	r.GET("/voters/:id/polls", voterApi.ListPollHistory)
 	r.GET("/voters/:id/polls/:pollid", voterApi.ListSinglePollData)
 	r.POST("/voters/:id/polls/:pollid", voterApi.AddPollData)
