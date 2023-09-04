@@ -1,4 +1,4 @@
-package poll_api
+package schema
 
 import (
 	"encoding/json"
