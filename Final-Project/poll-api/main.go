@@ -11,13 +11,12 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	voterApi := api.NewPollApi()
+	pollApi := api.NewPollApi()
 
-	r.GET("/voters", voterApi.ListAllPolls)
-	r.GET("/voters/:id", voterApi.ListPoll)
-	r.POST("/voters", voterApi.AddPoll)
-	r.GET("/voters/health", voterApi.GetHealth)
+	r.GET("/polls", pollApi.ListAllPolls)
+	r.GET("/polls/:id", pollApi.ListPoll)
+	r.POST("/polls", pollApi.AddPoll)
 
-	serverPath := "0.0.0.0:1080"
+	serverPath := "0.0.0.0:2080"
 	r.Run(serverPath)
 }

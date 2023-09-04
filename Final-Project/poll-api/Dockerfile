@@ -2,7 +2,7 @@ FROM golang:1.20 AS build-stage
 
 WORKDIR /app
 
-COPY .. .
+COPY . .
 
 RUN go mod download
 
@@ -19,4 +19,4 @@ EXPOSE 2080
 
 ENV REDIS_URL=host.docker.internal:6379
 
-CMD ["/vote-api"]
+CMD ["/poll-api"]
