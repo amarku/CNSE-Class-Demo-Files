@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -122,12 +123,17 @@ func (vl *VoterList) GetAllVoters() ([]Voter, error) {
 		return nil, err
 	}
 	for _, key := range ks {
+		log.Println(key)
 		err = vl.getVoterFromRedis(key, &voter)
 		if err != nil {
 			return nil, err
 		}
 		voterList = append(voterList, voter)
 	}
+
+	sort.Slice(voterList, func(i, j int) bool {
+		return voterList[i].VoterID < voterList[j].VoterID
+	})
 
 	return voterList, nil
 }
