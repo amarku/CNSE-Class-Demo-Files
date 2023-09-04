@@ -14,7 +14,6 @@ type VoteData struct {
 	Votes []Vote //A map of VoterIDs as keys and Voter structs as values
 }
 
-// constructor for VoterList struct
 func NewVote(pid, vid, vtrid, vval uint) *Vote {
 	return &Vote{
 		VoteID:    vid,
