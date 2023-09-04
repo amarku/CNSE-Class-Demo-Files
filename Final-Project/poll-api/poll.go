@@ -19,7 +19,6 @@ type PollList struct {
 	Polls map[uint]Poll //A map of VoterIDs as keys and Voter structs as values
 }
 
-// constructor for VoterList struct
 func NewPoll(id uint, title, question string) *Poll {
 	return &Poll{
 		PollID:       id,
