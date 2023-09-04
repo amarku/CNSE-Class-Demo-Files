@@ -29,7 +29,7 @@ func (v *VoterApi) AddVoter(c *gin.Context) {
 	}
 
 	if err := v.voterList.AddVoter(newVoter); err != nil {
-		log.Println("Error adding voter-api: ", err)
+		log.Println("Error adding voter: ", err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
