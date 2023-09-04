@@ -7,9 +7,13 @@ services:
     ports:
       - '6379:6379'
       - '8001:8001'
+    volumes:
+      - ./cache-data:/data
+    environment:
+      - REDIS_ARGS=--appendonly yes
     networks:
       - backend
-  Vote-HATEOS:
+  voter-api:
     image: vote-api:v1
     container_name: vote-api-1
     restart: always
