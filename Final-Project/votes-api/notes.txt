@@ -1,0 +1,6 @@
+-add json to Vote struct
+-add url from env to other apis to votes-api
+-construct url links to get polls and voters when returning votes
+-add functions for getting and returning polls and voters through votes api calls
+-return all poll questions with links to get votes for the polls
+-count votes?
