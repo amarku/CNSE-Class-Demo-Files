@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-redis/redis/v8"
-	"github.com/nitishm/go-rejson/v4"
 	"log"
 	"os"
 	"sort"
+
+	"github.com/go-redis/redis/v8"
+	"github.com/nitishm/go-rejson/v4"
 )
 
 type Vote struct {
@@ -17,9 +18,7 @@ type Vote struct {
 	VoterID   uint
 	PollID    uint
 	VoteValue uint
-}
-type VoteData struct {
-	Votes []Vote //A map of VoterIDs as keys and Voter structs as values
+	Links     map[string]string
 }
 
 func NewVote(pid, vid, vtrid, vval uint) *Vote {
