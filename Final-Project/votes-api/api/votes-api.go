@@ -42,6 +42,9 @@ func (p *VoteApi) AddVote(c *gin.Context) {
 		return
 	}
 
+	newVote.Links["poll"] = fmt.Sprintf("votes/%d/poll", newVote.VoteID)
+	newVote.Links["voter"] = fmt.Sprintf("votes/%d/voter", newVote.VoteID)
+
 	c.JSON(http.StatusOK, newVote)
 }
 
