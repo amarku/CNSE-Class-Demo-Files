@@ -52,6 +52,8 @@ services:
       - cache
     environment:
       - REDIS_URL=cache:6379
+      - POLL_API_URL=http://poll-api:2080
+      - VOTER_API_URL=http://voter-api:1080
     networks:
       - frontend
       - backend

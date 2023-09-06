@@ -4,17 +4,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"votes-api/schema"
 )
 
 type VoteApi struct {
-	voteList *schema.VoteList
+	voteList    *schema.VoteList
+	pollAPIURL  string
+	voterAPIURL string
 }
 
 func NewVotesApi() *VoteApi {
 	return &VoteApi{
 		schema.NewVoteList(),
+		os.Getenv("POLL_API_URL"),
+		os.Getenv("VOTER_API_URL"),
 	}
 }
 
