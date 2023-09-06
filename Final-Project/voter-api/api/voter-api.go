@@ -50,7 +50,7 @@ func (v *VoterApi) GetVoter(c *gin.Context, voterID uint) *schema.Voter {
 func (v *VoterApi) GetVoterJson(c *gin.Context, voterID uint) string {
 	voter, err := v.voterList.GetVoter(voterID)
 	if err != nil {
-		log.Println("error getting voter-api: " + err.Error())
+		log.Println("error getting voter: " + err.Error())
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
 	return voter.ToJson()
