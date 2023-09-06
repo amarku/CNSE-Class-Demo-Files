@@ -14,11 +14,11 @@ import (
 )
 
 type Vote struct {
-	VoteID    uint
-	VoterID   uint
-	PollID    uint
-	VoteValue uint
-	Links     map[string]string
+	VoteID    uint              `json:"voteID"`
+	VoterID   uint              `json:"voterID"`
+	PollID    uint              `json:"pollID"`
+	VoteValue uint              `json:"voteValue"`
+	Links     map[string]string `json:"links,omitempty"`
 }
 
 func NewVote(pid, vid, vtrid, vval uint) *Vote {
