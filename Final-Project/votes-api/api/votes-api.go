@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -149,6 +150,106 @@ func (p *VoteApi) ListVote(c *gin.Context) {
 	vote.Links["voter"] = fmt.Sprintf("votes/%d/voter", vote.VoteID)
 
 	c.JSON(http.StatusOK, vote)
+}
+
+func (p *VoteApi) AddVoter(c *gin.Context) {
+	var newVoter schema.Voter
+	var returnedVoter schema.Voter
+	id := getIDFromContext(c, "id")
+	vote := p.GetVote(c, id)
+
+	if err := c.ShouldBindJSON(&newVoter); err != nil {
+		log.Println("Error binding JSON: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	if vote.VoterID != newVoter.VoterID {
+		log.Println("Error adding voter: voter IDs do not match")
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	urlRequest := fmt.Sprintf("%s/voters", p.voterAPIURL)
+	data, errMarshal := json.Marshal(&newVoter)
+	if errMarshal != nil {
+		log.Println("Error encoding voter to json: ", errMarshal)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	resp, errPost := http.Post(urlRequest, "application/json", bytes.NewReader(data))
+	defer resp.Body.Close()
+	if errPost != nil {
+		log.Println("Error sending new voter http request: ", errPost)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	body, errBody := io.ReadAll(resp.Body)
+	if errBody != nil {
+		log.Println("Error reading body of http response: ", errBody)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	errUnmarshal := json.Unmarshal(body, &returnedVoter)
+	if errUnmarshal != nil {
+		log.Println("Error decoding body of http response: ", errUnmarshal)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusOK, &returnedVoter)
+}
+
+func (p *VoteApi) AddPoll(c *gin.Context) {
+	var newPoll schema.Poll
+	var returnedPoll schema.Poll
+	id := getIDFromContext(c, "id")
+	vote := p.GetVote(c, id)
+
+	if err := c.ShouldBindJSON(&newPoll); err != nil {
+		log.Println("Error binding JSON: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	if vote.PollID != newPoll.PollID {
+		log.Println("Error adding poll: poll IDs do not match")
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	urlRequest := fmt.Sprintf("%s/polls", p.pollAPIURL)
+	data, errMarshal := json.Marshal(&newPoll)
+	if errMarshal != nil {
+		log.Println("Error encoding poll to json: ", errMarshal)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	resp, errPost := http.Post(urlRequest, "application/json", bytes.NewReader(data))
+	defer resp.Body.Close()
+	if errPost != nil {
+		log.Println("Error sending new poll http request: ", errPost)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	body, errBody := io.ReadAll(resp.Body)
+	if errBody != nil {
+		log.Println("Error reading body of http response: ", errBody)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	errUnmarshal := json.Unmarshal(body, &returnedPoll)
+	if errUnmarshal != nil {
+		log.Println("Error decoding body of http response: ", errUnmarshal)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusOK, &returnedPoll)
 }
 
 func getIDFromContext(c *gin.Context, param string) uint {

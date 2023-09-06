@@ -5,4 +5,4 @@ curl -d '{ "pollID": 1, "pollTitle": "Favorite Pet", "pollQuestion": "What type 
 {"pollOptionID": 3, "pollOptionValue": "Fish"},
 {"pollOptionID": 4, "pollOptionValue": "Bird"},
 {"pollOptionID": 5, "pollOptionValue": "NONE"}
-]}' -H "Content-Type: application/json" -X POST http://localhost:2080/polls
+]}' -H "Content-Type: application/json" -X POST http://localhost:3080/votes/1/poll

@@ -18,6 +18,8 @@ func main() {
 	r.POST("/votes", votesApi.AddVote)
 	r.GET("/votes/:id/poll", votesApi.ListPoll)
 	r.GET("/votes/:id/voter", votesApi.ListVoter)
+	r.POST("/votes/:id/poll", votesApi.AddPoll)
+	r.POST("/votes/:id/voter", votesApi.AddVoter)
 
 	serverPath := "0.0.0.0:3080"
 	r.Run(serverPath)
