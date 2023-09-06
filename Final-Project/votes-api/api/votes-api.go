@@ -1,7 +1,10 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -65,9 +68,85 @@ func (p *VoteApi) ListAllVotes(c *gin.Context) {
 	c.JSON(http.StatusOK, voteList)
 }
 
+func (p *VoteApi) ListPoll(c *gin.Context) {
+	voteID := getIDFromContext(c, "id")
+	poll := p.GetPoll(c, voteID)
+
+	c.JSON(http.StatusOK, poll)
+}
+
+func (p *VoteApi) ListVoter(c *gin.Context) {
+	voteID := getIDFromContext(c, "id")
+	voter := p.GetVoter(c, voteID)
+
+	c.JSON(http.StatusOK, voter)
+}
+
+func (p *VoteApi) GetPoll(c *gin.Context, voteID uint) *schema.Poll {
+	var poll schema.Poll
+	vote := p.GetVote(c, voteID)
+	urlRequest := fmt.Sprintf("%s/polls/%d", p.pollAPIURL, vote.PollID)
+	resp, err := http.Get(urlRequest)
+	if err != nil {
+		log.Println("Error getting poll from vote: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return nil
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("Error reading response body: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return nil
+	}
+
+	err = json.Unmarshal(body, &poll)
+	if err != nil {
+		log.Println("Error decoding response body to json: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return nil
+	}
+
+	return &poll
+}
+
+func (p *VoteApi) GetVoter(c *gin.Context, voteID uint) *schema.Voter {
+	var voter schema.Voter
+	vote := p.GetVote(c, voteID)
+	urlRequest := fmt.Sprintf("%s/voters/%d", p.voterAPIURL, vote.PollID)
+	resp, err := http.Get(urlRequest)
+	if err != nil {
+		log.Println("Error getting voter from vote: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return nil
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("Error reading response body: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return nil
+	}
+
+	err = json.Unmarshal(body, &voter)
+	if err != nil {
+		log.Println("Error decoding response body to json: ", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return nil
+	}
+
+	return &voter
+}
+
 func (p *VoteApi) ListVote(c *gin.Context) {
 	id := getIDFromContext(c, "id")
 	vote := p.GetVote(c, id)
+	vote.Links = make(map[string]string)
+
+	vote.Links["poll"] = fmt.Sprintf("votes/%d/poll", vote.VoteID)
+	vote.Links["voter"] = fmt.Sprintf("votes/%d/voter", vote.VoteID)
 
 	c.JSON(http.StatusOK, vote)
 }

@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/nitishm/go-rejson/v4"
@@ -19,6 +20,29 @@ type Vote struct {
 	PollID    uint              `json:"pollID"`
 	VoteValue uint              `json:"voteValue"`
 	Links     map[string]string `json:"links,omitempty"`
+}
+
+type pollOption struct {
+	PollOptionID    uint   `json:"pollOptionID"`
+	PollOptionValue string `json:"pollOptionValue"`
+}
+
+type Poll struct {
+	PollID       uint         `json:"pollID"`
+	PollTitle    string       `json:"pollTitle"`
+	PollQuestion string       `json:"pollQuestion"`
+	PollOptions  []pollOption `json:"pollOptions"`
+}
+
+type voterPoll struct {
+	PollID   uint
+	VoteDate time.Time
+}
+
+type Voter struct {
+	VoterID   uint   `json:"voterID"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 func NewVote(pid, vid, vtrid, vval uint) *Vote {
@@ -111,6 +135,7 @@ func (vl *VoteList) GetVote(id uint) (*Vote, error) {
 	var vote Vote
 	pattern := redisKeyFromId(id)
 	err := vl.getVoteFromRedis(pattern, &vote)
+
 	if err != nil {
 		return &Vote{}, err
 	}
