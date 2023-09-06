@@ -5,25 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-redis/redis/v8"
+	"github.com/nitishm/go-rejson/v4"
 	"log"
 	"os"
 	"sort"
-	"time"
-
-	"github.com/go-redis/redis/v8"
-	"github.com/nitishm/go-rejson/v4"
 )
 
-type voterPoll struct {
-	PollID   uint
-	VoteDate time.Time
-}
-
 type Voter struct {
-	VoterID     uint        `json:"voterID"`
-	FirstName   string      `json:"firstName"`
-	LastName    string      `json:"lastName"`
-	VoteHistory []voterPoll `json:"voteHistory"`
+	VoterID   uint   `json:"voterID"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 const (
@@ -78,14 +70,6 @@ func NewWithCacheInstance(location string) *VoterList {
 	}
 }
 
-func (v *Voter) AddPoll(pollID uint) {
-	v.VoteHistory = append(v.VoteHistory, voterPoll{PollID: pollID, VoteDate: time.Now()})
-}
-
-func (v *Voter) AddPollWithTimeDetails(pollID uint, timeOfPoll time.Time) {
-	v.VoteHistory = append(v.VoteHistory, voterPoll{PollID: pollID, VoteDate: timeOfPoll})
-}
-
 func (v *Voter) ToJson() string {
 	b, _ := json.Marshal(v)
 	return string(b)
@@ -136,19 +120,6 @@ func (vl *VoterList) GetAllVoters() ([]Voter, error) {
 	})
 
 	return voterList, nil
-}
-
-func (v *Voter) GetVoteHistory() []time.Time {
-	var pollDates []time.Time
-	for _, history := range v.VoteHistory {
-		pollDates = append(pollDates, history.VoteDate)
-	}
-
-	return pollDates
-}
-
-func (v *Voter) GetPollById(pollId uint) time.Time {
-	return v.VoteHistory[pollId].VoteDate
 }
 
 func redisKeyFromId(id uint) string {
